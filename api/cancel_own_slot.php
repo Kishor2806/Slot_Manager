@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $booking_id = $_POST['booking_id'] ?? '';
 $user_id = $_SESSION['user_id'];
+$user_role = $_SESSION['role'] ?? 'employee';
 
 if (empty($booking_id)) {
     echo json_encode(['success' => false, 'error' => 'Booking ID missing.']);
@@ -21,9 +22,14 @@ if (empty($booking_id)) {
 }
 
 try {
-    // Only allow cancelling if they own it
-    $stmt = $pdo->prepare("UPDATE bookings SET status = 'cancelled' WHERE id = :bid AND user_id = :uid");
-    $stmt->execute(['bid' => $booking_id, 'uid' => $user_id]);
+    // Admins can cancel any booking. Normal employees can only cancel their own.
+    if ($user_role === 'admin' || $user_role === 'super_admin') {
+        $stmt = $pdo->prepare("DELETE FROM bookings WHERE id = :bid");
+        $stmt->execute(['bid' => $booking_id]);
+    } else {
+        $stmt = $pdo->prepare("DELETE FROM bookings WHERE id = :bid AND user_id = :uid");
+        $stmt->execute(['bid' => $booking_id, 'uid' => $user_id]);
+    }
     
     if ($stmt->rowCount() > 0) {
         // TODO: Send cancellation email

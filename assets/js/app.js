@@ -56,10 +56,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
 
-                // Show modal and prepopulate dates
+                // Show modal and prepopulate dates for New Booking
+                document.getElementById('bookingModalTitle').textContent = 'Book a Slot';
+                document.getElementById('booking_id').value = '';
                 document.getElementById('start_time').value = formatDateTimeLocal(info.start);
                 document.getElementById('end_time').value = formatDateTimeLocal(info.end);
                 document.getElementById('description').value = '';
+                document.getElementById('submitBookingBtn').textContent = 'Submit Booking';
 
                 alertMsg.classList.add('hidden'); // hide alert
                 bookingModalEl.classList.remove('hidden');
@@ -82,23 +85,49 @@ document.addEventListener('DOMContentLoaded', function () {
                 else if (props.status === 'pending') statusEl.className = 'inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
                 else statusEl.className = 'inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800';
 
-                // Show cancel button only if it's their own event
-                // window.currentUserId is set in index.php head
+                // Show actions button if it's their own event, OR if they are an admin.
+                // window.currentUserId and window.currentUserRole are set in index.php head
                 const actionsEl = document.getElementById('detailActions');
                 const cancelBtn = document.getElementById('cancelOwnEventBtn');
-                if (props.user_id == window.currentUserId && props.status !== 'cancelled') {
-                    actionsEl.classList.remove('hidden');
+                const editBtn = document.getElementById('editOwnEventBtn'); // New
+
+                const isOwner = props.user_id == window.currentUserId;
+                const isAdmin = window.currentUserRole === 'admin' || window.currentUserRole === 'super_admin';
+
+                if ((isOwner || isAdmin) && props.status !== 'cancelled') {
+                    actionsEl.style.display = 'flex';
                     cancelBtn.onclick = function () {
                         cancelEvent(info.event.id);
                     };
+                    editBtn.onclick = function() {
+                        editEvent(info.event);
+                    };
                 } else {
-                    actionsEl.classList.add('hidden');
+                    actionsEl.style.display = 'none';
                 }
 
                 detailsModalEl.classList.remove('hidden');
             }
         });
         calendar.render();
+    }
+
+    // Edit Event Action Helper
+    function editEvent(event) {
+        detailsModalEl.classList.add('hidden');
+        const props = event.extendedProps;
+        
+        // Populate modal with existing data
+        document.getElementById('bookingModalTitle').textContent = 'Edit Slot';
+        document.getElementById('booking_id').value = event.id;
+        document.getElementById('event_id').value = props.event_id;
+        document.getElementById('start_time').value = formatDateTimeLocal(event.start);
+        document.getElementById('end_time').value = formatDateTimeLocal(event.end);
+        document.getElementById('description').value = props.description || '';
+        document.getElementById('submitBookingBtn').textContent = 'Update Booking';
+
+        alertMsg.classList.add('hidden');
+        bookingModalEl.classList.remove('hidden');
     }
 
     // Booking Form Submit
@@ -109,8 +138,10 @@ document.addEventListener('DOMContentLoaded', function () {
             alertMsg.classList.add('hidden');
 
             const formData = new FormData(bookingForm);
+            const isEdit = formData.get('booking_id') !== '';
+            const endpoint = isEdit ? 'edit_slot.php' : 'book_slot.php';
 
-            fetch(apiBasePath + 'book_slot.php', {
+            fetch(apiBasePath + endpoint, {
                 method: 'POST',
                 body: formData
             })
@@ -134,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .finally(() => {
                     submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'Submit Booking';
+                    submitBtn.innerHTML = isEdit ? 'Update Booking' : 'Submit Booking';
                 });
         });
     }

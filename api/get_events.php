@@ -23,6 +23,7 @@ $stmt = $pdo->prepare("
         b.end_time as end,
         b.status,
         b.description,
+        b.event_id,
         me.title,
         me.color_code,
         u.name as user_name
@@ -59,6 +60,7 @@ foreach ($results as $row) {
             'description' => $row['description'],
             'user_id' => $row['user_id'],
             'user_name' => $row['user_name'],
+            'event_id' => $row['event_id'],
             'themeColor' => $row['color_code'] // original theme color of event
         ]
     ];

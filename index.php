@@ -51,10 +51,10 @@ require_login();
         }
         .hidden { display: none !important; }
     </style>
-    
-    <!-- Pass session user id to JS -->
+    <!-- Pass session user id and role to JS -->
     <script>
-        const currentUserId = <?= json_encode($_SESSION['user_id']); ?>;
+        var currentUserId = <?= json_encode($_SESSION['user_id'] ?? null); ?>;
+        var currentUserRole = <?= json_encode($_SESSION['role'] ?? 'employee'); ?>;
     </script>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden min-h-screen">
@@ -169,13 +169,14 @@ require_login();
 <div id="bookingModal" class="hidden">
     <div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md mx-4 overflow-hidden transform transition-all">
         <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-primary/10 flex items-center justify-between">
-            <h3 class="text-lg font-bold text-primary">Book a Slot</h3>
+            <h3 class="text-lg font-bold text-primary" id="bookingModalTitle">Book a Slot</h3>
             <button onclick="document.getElementById('bookingModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 transition-colors">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
         <div class="p-6">
             <form id="bookingForm" class="space-y-4">
+                <input type="hidden" name="booking_id" id="booking_id" value="">
                 <div>
                     <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Event Type</label>
                     <select class="w-full rounded-lg border-slate-300 text-sm focus:ring-primary focus:border-primary" name="event_id" id="event_id" required></select>
@@ -221,7 +222,8 @@ require_login();
             <hr class="border-slate-100">
             <div id="detailDesc" class="text-sm text-slate-600 dark:text-slate-400"></div>
             
-            <div id="detailActions" class="hidden pt-4 mt-2 border-t border-slate-100 text-right">
+            <div id="detailActions" class="pt-4 mt-2 border-t border-slate-100 flex justify-end gap-2" style="display: none;">
+                <button id="editOwnEventBtn" class="px-3 py-1.5 border border-primary text-primary hover:bg-primary/10 text-xs font-bold rounded-lg transition-colors">Edit Slot</button>
                 <button id="cancelOwnEventBtn" class="px-3 py-1.5 border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold rounded-lg transition-colors">Cancel Slot</button>
             </div>
         </div>
