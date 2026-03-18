@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item"><a class="nav-link" href="index.php">Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" href="bookings.php">Bookings</a></li>
-        <li class="nav-item"><a class="nav-link" href="whitelist.php">Whitelist</a></li>
+        <li class="nav-item"><a class="nav-link" href="whitelist.php">Manage Admins</a></li>
         <li class="nav-item"><a class="nav-link" href="event_types.php">Event Types</a></li>
       </ul>
     </div>

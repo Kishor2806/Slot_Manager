@@ -29,28 +29,18 @@ function require_admin() {
 }
 
 function handle_auth_success($pdo, $email, $name, $zoho_id) {
-    // 1. Check Whitelist
-    $domain = substr(strrchr($email, "@"), 1);
-    
-    $stmt = $pdo->prepare("SELECT * FROM whitelist WHERE (email_or_domain = :email OR email_or_domain = :domain) AND is_active = 1 LIMIT 1");
-    $stmt->execute(['email' => $email, 'domain' => '@'.$domain]);
-    $whitelist_entry = $stmt->fetch(PDO::FETCH_ASSOC);
+    // All Zoho SSO authenticated users are allowed (no whitelist check needed).
+    // Admin role is managed via the Manage Admins page in admin panel.
 
-    if (!$whitelist_entry) {
-        $_SESSION['error_msg'] = "Access denied. Your email is not whitelisted.";
-        header("Location: login.php");
-        exit();
-    }
-
-    // 2. Fetch or Create User
+    // 1. Fetch or Create User
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
     $stmt->execute(['email' => $email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
-        // Create user. If they are the first user and the email matches admin@example.com they get admin, else employee.
-        // For simplicity, we default to employee and let existing admins upgrade roles via DB/Dashboard.
-        $role = ($email === 'admin@example.com') ? 'admin' : 'employee';
+        // New users default to 'employee' role.
+        // Admins can promote employees via the Manage Admins page.
+        $role = 'employee';
         $stmt = $pdo->prepare("INSERT INTO users (name, email, role, zoho_id) VALUES (:name, :email, :role, :zoho_id)");
         $stmt->execute(['name' => $name, 'email' => $email, 'role' => $role, 'zoho_id' => $zoho_id]);
         $user_id = $pdo->lastInsertId();

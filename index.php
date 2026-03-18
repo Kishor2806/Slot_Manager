@@ -183,14 +183,43 @@ require_login();
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Start Date</label>
+                        <input type="date" class="w-full rounded-lg border-slate-300 text-sm focus:ring-primary focus:border-primary" id="start_date" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">End Date</label>
+                        <input type="date" class="w-full rounded-lg border-slate-300 text-sm focus:ring-primary focus:border-primary" id="end_date" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
                         <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Start Time</label>
-                        <input type="datetime-local" class="w-full rounded-lg border-slate-300 text-sm focus:ring-primary focus:border-primary" name="start_time" id="start_time" required>
+                        <div class="flex items-center gap-1">
+                            <input type="number" min="1" max="12" class="w-14 rounded-lg border-slate-300 text-sm text-center focus:ring-primary focus:border-primary" id="start_hour" placeholder="HH" required>
+                            <span class="text-slate-400 font-bold">:</span>
+                            <input type="number" min="0" max="59" step="5" class="w-14 rounded-lg border-slate-300 text-sm text-center focus:ring-primary focus:border-primary" id="start_minute" placeholder="MM" required>
+                            <select class="rounded-lg border-slate-300 text-sm font-bold focus:ring-primary focus:border-primary px-2" id="start_ampm">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">End Time</label>
-                        <input type="datetime-local" class="w-full rounded-lg border-slate-300 text-sm focus:ring-primary focus:border-primary" name="end_time" id="end_time" required>
+                        <div class="flex items-center gap-1">
+                            <input type="number" min="1" max="12" class="w-14 rounded-lg border-slate-300 text-sm text-center focus:ring-primary focus:border-primary" id="end_hour" placeholder="HH" required>
+                            <span class="text-slate-400 font-bold">:</span>
+                            <input type="number" min="0" max="59" step="5" class="w-14 rounded-lg border-slate-300 text-sm text-center focus:ring-primary focus:border-primary" id="end_minute" placeholder="MM" required>
+                            <select class="rounded-lg border-slate-300 text-sm font-bold focus:ring-primary focus:border-primary px-2" id="end_ampm">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
+                <!-- Hidden fields to hold combined datetime-local values for form submission -->
+                <input type="hidden" name="start_time" id="start_time">
+                <input type="hidden" name="end_time" id="end_time">
                 <div>
                     <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Description (Optional)</label>
                     <textarea class="w-full rounded-lg border-slate-300 text-sm focus:ring-primary focus:border-primary" name="description" id="description" rows="2"></textarea>

@@ -8,7 +8,7 @@ require_admin();
 $total_bookings = $pdo->query("SELECT COUNT(*) FROM bookings WHERE status != 'cancelled'")->fetchColumn();
 $today_meetings = $pdo->query("SELECT COUNT(*) FROM bookings WHERE status = 'approved' AND DATE(start_time) = CURDATE()")->fetchColumn();
 $pending_approvals = $pdo->query("SELECT COUNT(*) FROM bookings WHERE status = 'pending'")->fetchColumn();
-$active_employees = $pdo->query("SELECT COUNT(*) FROM whitelist WHERE is_active = 1")->fetchColumn();
+$active_employees = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
 
 // Fetch Recent Bookings
 $recent = $pdo->query("
@@ -71,8 +71,8 @@ $recent = $pdo->query("
             <span>Dashboard</span>
         </a>
         <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="whitelist.php">
-            <span class="material-symbols-outlined">verified_user</span>
-            <span>Whitelist</span>
+            <span class="material-symbols-outlined">admin_panel_settings</span>
+            <span>Manage Admins</span>
         </a>
         <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="calendar.php">
             <span class="material-symbols-outlined">event</span>
